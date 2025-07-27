@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://amato2114.github.io/portfolio-site/sitemap.xml
