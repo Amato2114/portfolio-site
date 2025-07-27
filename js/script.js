@@ -5,16 +5,21 @@ const modalDesc = document.getElementById('modal-desc');
 const modalImg = document.getElementById('modal-img');
 const modalClose = document.querySelector('.modal-close');
 
-// Открытие модального окна при клике на кнопку "Подробнее"
+// Открытие модального окна для сертификатов с событием Google Analytics
 document.querySelectorAll('.modal-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         modalTitle.textContent = btn.dataset.title;
         modalDesc.textContent = btn.dataset.desc;
         modalImg.src = btn.dataset.img;
-        modalImg.alt = `Сертификат: ${btn.dataset.title}, 2024`; // Улучшенный alt для SEO и доступности
+        modalImg.alt = `Сертификат: ${btn.dataset.title}, 2024`;
         modal.style.display = 'block';
         modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden'; // Блокировка прокрутки
+        document.body.style.overflow = 'hidden';
+        // Событие Google Analytics для просмотра сертификата
+        gtag('event', 'view_certificate', {
+            'event_category': 'Certificates',
+            'event_label': btn.dataset.title
+        });
     });
 });
 
@@ -22,7 +27,7 @@ document.querySelectorAll('.modal-btn').forEach(btn => {
 modalClose.addEventListener('click', () => {
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = 'auto'; // Восстановление прокрутки
+    document.body.style.overflow = 'auto';
 });
 
 // Закрытие модального окна при клике вне контента
@@ -34,20 +39,35 @@ modal.addEventListener('click', (e) => {
     }
 });
 
+// Событие Google Analytics для скачивания резюме
+document.querySelector('.cta-button').addEventListener('click', () => {
+    gtag('event', 'download_resume', {
+        'event_category': 'Resume',
+        'event_label': 'Resume PDF'
+    });
+});
+
+// События Google Analytics для ссылок портфолио
+document.querySelectorAll('.portfolio-item a').forEach(link => {
+    link.addEventListener('click', () => {
+        gtag('event', 'click_portfolio', {
+            'event_category': 'Portfolio',
+            'event_label': link.parentElement.querySelector('h3').textContent
+        });
+    });
+});
+
 // Переключение вкладок в разделе "Резюме"
 const tabLinks = document.querySelectorAll('.tab-link');
 const tabContents = document.querySelectorAll('.tab-content');
 
 tabLinks.forEach(link => {
     link.addEventListener('click', () => {
-        // Удаление активного класса у всех вкладок и контента
         tabLinks.forEach(l => {
             l.classList.remove('active');
             l.setAttribute('aria-selected', 'false');
         });
         tabContents.forEach(c => c.classList.remove('active'));
-
-        // Активация выбранной вкладки и контента
         link.classList.add('active');
         link.setAttribute('aria-selected', 'true');
         const tabId = link.dataset.tab;
@@ -61,17 +81,12 @@ const certificateCards = document.querySelectorAll('.certificate-card');
 
 filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Удаление активного класса у всех кнопок
         filterButtons.forEach(b => {
             b.classList.remove('active');
             b.setAttribute('aria-checked', 'false');
         });
-
-        // Активация выбранной кнопки
         btn.classList.add('active');
         btn.setAttribute('aria-checked', 'true');
-
-        // Фильтрация карточек
         const filter = btn.dataset.filter;
         certificateCards.forEach(card => {
             if (filter === 'all' || card.dataset.category === filter) {
@@ -119,14 +134,10 @@ accordionHeaders.forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
         const isOpen = content.style.display === 'block';
-
-        // Закрытие всех аккордеонов
         accordionHeaders.forEach(h => {
             h.nextElementSibling.style.display = 'none';
             h.setAttribute('aria-expanded', 'false');
         });
-
-        // Открытие/закрытие текущего аккордеона
         if (!isOpen) {
             content.style.display = 'block';
             header.setAttribute('aria-expanded', 'true');
